@@ -1,0 +1,47 @@
+@startuml
+skinparam dpi 150
+left to right direction
+title Роадмап технологических изменений
+
+rectangle "Фаза 1: Фундамент и безопасность (Месяцы 1-3)" as Stage1
+rectangle "Фаза 2: Портал самообслуживания (Месяцы 4-6)" as Stage2
+rectangle "Фаза 3: Независимые домены (Месяцы 7-12)" as Stage3
+rectangle "Фаза 4: Оптимизация и рост (Месяцы 13-18)" as Stage4
+
+Stage1 --> Stage2
+Stage2 --> Stage3
+Stage3 --> Stage4
+
+note bottom of Stage1
+<b>Цель:</b> Создать основу для изменений.
+- Миграция в облако (Azure/AWS)
+- Контейнеризация (K8s)
+- Внедрение Event Bus (Kafka)
+- Настройка мониторинга и CI/CD
+end note
+
+note bottom of Stage2
+<b>Цель:</b> Ускорить принятие решений.
+- Data Warehouse (Synapse/Redshift)
+- Data Lake (ADLS/S3)
+- OLAP кубы (Analysis Services)
+- Портал самообслуживания (React)
+end note
+
+note bottom of Stage3
+<b>Цель:</b> Обеспечить независимое развитие.
+- Выделение доменов (Медицина, Финтех, ИИ)
+- API Gateway
+- Партнёрский домен
+- Вынос бизнес-логики из DWH
+end note
+
+note bottom of Stage4
+<b>Цель:</b> Оптимизировать и расти.
+- Infrastructure as Code (Terraform)
+- Оптимизация производительности
+- Оценка Data Mesh
+- Завершение миграции с легаси
+end note
+
+@enduml

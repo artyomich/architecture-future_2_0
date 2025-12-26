@@ -1,0 +1,92 @@
+@startuml
+skinparam defaultFontSize 11
+skinparam backgroundColor #FFFFFF
+title Технологический радар: «Будущее 2.0»
+
+legend right
+|= Кольцо|= Статус|
+| <#588157> | ADOPT - Активно используем |
+| <#457b9d> | TRIAL - Пробуем |
+| <#bc6c25> | ASSESS - Изучаем |
+| <#d62828> | HOLD - Планируем заменить |
+endlegend
+
+' Квадрант: Языки и Фреймворки
+package "Языки и Фреймворки" #a3b18a {
+    rectangle "Python (ИИ-сервисы)" as python #588157
+    rectangle "Java (Backend, Финтех)" as java #588157
+    rectangle "Go (Финтех)" as go #588157
+    rectangle "React (Портал)" as react #588157
+    rectangle "TypeScript (Frontend)" as ts #457b9d
+}
+
+' Квадрант: Инструменты
+package "Инструменты" #a3b18a {
+    rectangle "PostgreSQL" as postgres #588157
+    rectangle "Kafka" as kafka #457b9d
+    rectangle "Airflow" as airflow #457b9d
+    rectangle "Prometheus / Grafana" as monitoring #588157
+    rectangle "GitLab CI" as cicd #588157
+    rectangle "SQL Server 2008" as sql2008 #d62828
+    rectangle "PowerBuilder" as pb #d62828
+}
+
+' Квадрант: Платформы и Операции
+package "Платформы и Операции" #a3b18a {
+    rectangle "Azure / AWS" as cloud #588157
+    rectangle "Kubernetes (AKS/EKS)" as k8s #588157
+    rectangle "Azure Synapse / Redshift" as dwh #457b9d
+    rectangle "Azure Data Lake / S3" as datalake #457b9d
+    rectangle "Kong / Azure API Mgmt" as apigw #457b9d
+}
+
+' Квадрант: Методы и Паттерны
+package "Методы и Паттерны" #a3b18a {
+    rectangle "Event-Driven Architecture" as eda #588157
+    rectangle "Domain-Driven Design (DDD)" as ddd #588157
+    rectangle "Microservices" as micro #457b9d
+    rectangle "Infrastructure as Code (Terraform)" as iac #457b9d
+    rectangle "Data Mesh" as datamesh #bc6c25
+    rectangle "Monolithic DWH" as monolith #d62828
+}
+
+note right of python
+<b>Бизнес-сценарии:</b>
+• ИИ-сервисы для анализа медицинских данных
+• ETL/ELT процессы
+end note
+
+note right of kafka
+<b>Бизнес-сценарии:</b>
+• Интеграция новых бизнесов
+• Независимое развитие доменов
+• Асинхронная обработка данных
+end note
+
+note right of cloud
+<b>Бизнес-сценарии:</b>
+• Масштабирование отчётности
+• Геораспределённое развёртывание
+• Снижение затрат на инфраструктуру
+end note
+
+note right of datamesh
+<b>Бизнес-сценарии:</b>
+• Интеграция новых партнёров
+• Децентрализованная аналитика
+• Масштабирование для новых бизнесов
+end note
+
+note right of sql2008
+<b>Статус:</b>
+• Планируется миграция в Azure Synapse
+• Используется только для медицинских данных до завершения миграции
+end note
+
+note right of monolith
+<b>Проблемы:</b>
+• Единая точка отказа
+• Блокировка независимого развития доменов
+end note
+
+@enduml

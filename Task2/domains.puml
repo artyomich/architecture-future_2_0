@@ -1,0 +1,102 @@
+@startuml
+skinparam componentStyle rectangles
+skinparam linetype ortho
+skinparam packageStyle rectangles
+skinparam defaultFontSize 12
+title DFD: Разделение на домены и потоки данных\nБудущее 2.0
+
+actor "Оператор клиники" as operator
+actor "Бизнес-пользователь" as business_user
+actor "Пользователь финтех" as fintech_user
+actor "Партнёры" as partners
+
+package "Домен: Медицинские услуги" #LightCoral {
+    component "Медицинский API" as medical_api
+    database "Медицинская БД" as medical_db
+}
+
+package "Домен: ИИ-сервисы" #Plum {
+    component "ИИ-сервисы" as ai_services
+    database "Хранилище ИИ" as ai_storage
+}
+
+package "Домен: Финтех-услуги" #LightYellow {
+    component "Финтех API" as fintech_api
+    database "Финтех БД" as fintech_db
+}
+
+package "Домен: Партнёрские сервисы" #LightBlue {
+    component "API партнёров" as partner_api
+    database "БД партнёров" as partner_db
+}
+
+package "Домен: Аналитика и витрина данных" #LightGreen {
+    component "Портал витрины" as portal_ui
+    database "Data Warehouse" as data_warehouse
+    component "ETL сервисы" as etl_services
+    database "Data Lake" as data_lake
+    component "Каталог данных" as data_catalog
+}
+
+package "Домен: Интеграция" #LightGray {
+    queue "Шина событий" as event_bus
+    component "API Gateway" as api_gateway
+    component "Сервис интеграции" as integration_service
+}
+
+' Основные потоки: Пользователи
+operator --> medical_api : Работа с данными
+business_user --> portal_ui : Создание отчётов
+fintech_user --> fintech_api : Банковские операции
+partners --> partner_api : Интеграция
+
+' Потоки внутри доменов (упрощённо)
+medical_api --> medical_db
+fintech_api --> fintech_db
+partner_api --> partner_db
+ai_services --> ai_storage
+
+' Ключевые потоки между доменами
+medical_api --> event_bus : События(приёмы, диагнозы, назначения)
+ai_services --> event_bus : События(результаты анализа)
+fintech_api --> event_bus : События(транзакции, платежи)
+partner_api --> event_bus : События(заказы, поставки)
+
+event_bus --> ai_services : Подписка на события (новые данные)
+event_bus --> medical_api : Подписка на события (результаты ИИ)
+
+' Потоки в витрину данных
+event_bus --> etl_services : Все события (Stream)
+etl_services --> data_lake : Сырые данные (Batch/Stream)
+etl_services --> data_warehouse : Трансформированные данные (Batch)
+data_warehouse --> portal_ui : Аналитические запросы (OLAP)
+portal_ui --> data_catalog : Поиск метаданных
+
+' API Gateway маршрутизация (упрощённо)
+api_gateway --> medical_api
+api_gateway --> fintech_api
+api_gateway --> partner_api
+api_gateway --> portal_ui
+
+' Дополнительные потоки
+integration_service --> event_bus : Оркестрация (опционально)
+event_bus --> integration_service : Запросы на оркестрацию (опционально)
+
+legend right
+|= Цвет|= Домен|
+| <#LightCoral> | Медицинские услуги |
+| <#Plum> | ИИ-сервисы |
+| <#LightYellow> | Финтех-услуги |
+| <#LightBlue> | Партнёрские сервисы |
+| <#LightGreen> | Аналитика |
+| <#LightGray> | Интеграция |
+end legend
+
+note bottom
+<b>Ключевые потоки:</b>
+1. Операционные данные → Шина событий → ETL → Витрина
+2. Медицинские данные → ИИ-сервисы → Результаты → Витрина
+3. Все домены → API Gateway → Внешний доступ
+end note
+
+@enduml
