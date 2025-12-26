@@ -1,0 +1,128 @@
+@startuml
+skinparam componentStyle rectangle
+skinparam linetype ortho
+skinparam defaultFontSize 12
+title Диаграмма автоматизации развёртывания\nИнфраструктура "Будущее 2.0"
+
+package "Управляется Terraform" #LightGreen {
+  component "Resource Group" as rg
+
+  package "Сеть" {
+    component "Virtual Network" as vnet
+    component "Subnet: Medical" as subnet_medical
+    component "Subnet: Fintech" as subnet_fintech
+    component "Subnet: AI" as subnet_ai
+    component "Subnet: Analytics" as subnet_analytics
+    component "Subnet: Integration" as subnet_integration
+    component "NAT Gateway" as nat_gateway
+    component "Public IP (NAT)" as nat_ip
+  }
+
+  package "Медицинский домен" {
+    component "VM: Medical API" as vm_medical
+    component "Disk: Medical Data" as disk_medical
+    component "NSG: Medical" as nsg_medical
+  }
+
+  package "Финтех домен" {
+    component "VM: Fintech API" as vm_fintech
+    component "Disk: Fintech Data" as disk_fintech
+    component "NSG: Fintech" as nsg_fintech
+  }
+
+  package "ИИ домен" {
+    component "VM: AI Services" as vm_ai
+    component "Disk: AI Storage" as disk_ai
+    component "NSG: AI" as nsg_ai
+  }
+
+  package "Аналитика" {
+    component "VM: ETL Services" as vm_etl
+    component "VM: Portal" as vm_portal
+    component "Disk: Data Warehouse" as disk_dw
+    component "NSG: Analytics" as nsg_analytics
+  }
+
+  package "Интеграция" {
+    component "VM: API Gateway" as vm_gateway
+    component "VM: Event Bus" as vm_eventbus
+    component "NSG: Integration" as nsg_integration
+  }
+
+  package "Балансировщики" {
+    component "Load Balancer" as lb
+    component "Public IP (LB)" as lb_ip
+  }
+}
+
+package "Управляется вручную / Управляемые сервисы" #LightYellow {
+  component "Managed Kafka (MSK/EventHub)" as kafka
+  component "Object Storage (S3/ADLS)" as object_storage
+  component "Cloud Data Warehouse (Redshift/Synapse)" as cloud_dwh
+  component "Kubernetes Cluster (EKS/AKS)" as k8s
+}
+
+' Связи Terraform
+rg --> vnet : Создает
+vnet --> subnet_medical : Содержит
+vnet --> subnet_fintech : Содержит
+vnet --> subnet_ai : Содержит
+vnet --> subnet_analytics : Содержит
+vnet --> subnet_integration : Содержит
+
+subnet_medical --> vm_medical : Размещает
+subnet_fintech --> vm_fintech : Размещает
+subnet_ai --> vm_ai : Размещает
+subnet_analytics --> vm_etl : Размещает
+subnet_analytics --> vm_portal : Размещает
+subnet_integration --> vm_gateway : Размещает
+subnet_integration --> vm_eventbus : Размещает
+
+vm_medical --> disk_medical : Подключает
+vm_fintech --> disk_fintech : Подключает
+vm_ai --> disk_ai : Подключает
+vm_etl --> disk_dw : Подключает
+
+subnet_medical --> nsg_medical : Защищает
+subnet_fintech --> nsg_fintech : Защищает
+subnet_ai --> nsg_ai : Защищает
+subnet_analytics --> nsg_analytics : Защищает
+subnet_integration --> nsg_integration : Защищает
+
+subnet_integration --> nat_gateway : Использует
+nat_gateway --> nat_ip : Использует
+
+lb --> lb_ip : Использует
+lb --> vm_gateway : Балансирует
+lb --> vm_portal : Балансирует
+
+' Связи с ручными сервисами
+vm_etl ..> object_storage : Загружает
+vm_eventbus ..> kafka : Подключается как клиент
+vm_medical ..> cloud_dwh : Для мониторинга (опционально)
+
+note right of rg
+<b>Terraform управляет:</b>
+• Resource Group / VPC
+• Подсети по доменам
+• VM, Диски, NSG
+• NAT, Load Balancer
+• Public IP
+end note
+
+note right of kafka
+<b>Ручное управление:</b>
+• Управляемые сервисы:
+  - Kafka/EventHub
+  - S3/ADLS
+  - Redshift/Synapse
+• Kubernetes (EKS/AKS)
+end note
+
+legend right
+|= Цвет|= Управление|
+| <#LightGreen>| Terraform (IaaS)|
+| <#LightYellow>| Ручное / Управляемые сервисы (PaaS)|
+end legend
+
+@enduml
